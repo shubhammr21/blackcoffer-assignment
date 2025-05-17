@@ -1,6 +1,6 @@
 import * as d3 from "d3"
 import { useEffect, useRef } from "react"
-import { type DataRecord } from "../DataDashboard"
+import { type DataRecord } from "../dashboard"
 
 interface LikelihoodChartProps {
   data: DataRecord[]

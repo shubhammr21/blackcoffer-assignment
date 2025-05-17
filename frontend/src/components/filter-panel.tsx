@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { getFetchFilterOptionsQuery } from "@/services/reports/queries"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { type Filters } from "./DataDashboard"
+import { type Filters } from "./dashboard"
 
 interface FilterPanelProps {
   filters: Filters

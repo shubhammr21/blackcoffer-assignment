@@ -1,7 +1,7 @@
 // This is a sample of the data structure with a few records
 // In a real implementation, this would come from the Django backend API
 
-import { type DataRecord } from "../components/DataDashboard"
+import { type DataRecord } from "../components/dashboard"
 
 const mockData: DataRecord[] = [
   {

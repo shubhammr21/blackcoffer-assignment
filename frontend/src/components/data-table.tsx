@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { type DataRecord } from "./DataDashboard"
+import { type DataRecord } from "./dashboard"
 
 import {
   Pagination,
