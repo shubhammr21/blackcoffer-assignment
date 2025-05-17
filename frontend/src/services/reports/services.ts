@@ -1,8 +1,21 @@
 import api from "@/lib/api"
-import type { FilterOptionsResponse } from "./types"
+import type {
+  DashboardListResponse,
+  DashboardStatsResponse,
+  FilterOptionsResponse
+} from "./types"
 
-export const fetchDashboardData = async (params = {}) => {
-  const response = await api.get("/records/list/", { params })
+export const fetchDashboardTable = async (params = {}) => {
+  const response = await api.get<DashboardListResponse>("/records/list/", {
+    params
+  })
+  return response.data
+}
+
+export const fetchDashboardStats = async (params = {}) => {
+  const response = await api.get<DashboardStatsResponse>("/records/stats/", {
+    params
+  })
   return response.data
 }
 
@@ -10,9 +23,5 @@ export const fetchFilterOptions = async () => {
   const response = await api.get<FilterOptionsResponse>(
     "/records/filter-options/"
   )
-  return response.data
-}
-export const fetchDashboardStats = async () => {
-  const response = await api.get<FilterOptionsResponse>("/records/stats/")
   return response.data
 }
