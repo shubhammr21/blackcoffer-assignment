@@ -66,7 +66,7 @@ class DataStatsView(generics.GenericAPIView):
                         | Q(likelihood__isnull=False),
                     )
                     .annotate(
-                        valid_year=Coalesce("start_year", "end_year"),
+                        year=Coalesce("start_year", "end_year"),
                         # Use different names for annotated fields
                         intensity_value=Case(
                             When(intensity__isnull=True, then=Value(0)),
@@ -84,15 +84,15 @@ class DataStatsView(generics.GenericAPIView):
                             output_field=FloatField(),
                         ),
                     )
-                    .filter(valid_year__gt=0)
-                    .values("valid_year")
+                    .filter(year__gt=0)
+                    .values("year")
                     .annotate(
                         intensity=Avg("intensity_value"),
                         relevance=Avg("relevance_value"),
                         likelihood=Avg("likelihood_value"),
                         count=Count("id"),
                     )
-                    .order_by("valid_year")
+                    .order_by("year")
                 )
             ),
             "likelihoods": (
