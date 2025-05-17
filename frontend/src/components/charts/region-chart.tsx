@@ -1,49 +1,21 @@
+import type { RegionStats } from "@/services/reports/types"
 import * as d3 from "d3"
 import { useEffect, useRef } from "react"
-import { type DataRecord } from "../dashboard"
 
 interface RegionChartProps {
-  data: DataRecord[]
+  chartData: RegionStats[]
 }
 
-const RegionChart = ({ data }: RegionChartProps) => {
+const RegionChart = ({ chartData }: RegionChartProps) => {
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   useEffect(() => {
-    if (!data || data.length === 0 || !svgRef.current) {
+    if (!chartData || chartData.length === 0 || !svgRef.current) {
       return
     }
 
     // Clear previous chart
     d3.select(svgRef.current).selectAll("*").remove()
-
-    // Filter data to include only records with region and intensity values
-    const validData = data.filter(
-      d =>
-        d.region !== null &&
-        d.region !== undefined &&
-        d.region !== "" &&
-        d.intensity !== null &&
-        d.intensity !== undefined
-    )
-
-    if (validData.length === 0) return
-
-    // Group data by region and calculate average intensity
-    const regionData = d3.rollup(
-      validData,
-      v => d3.mean(v, d => d.intensity || 0),
-      d => d.region || "Unknown"
-    )
-
-    // Convert Map to array for easier manipulation and sort by intensity
-    const chartData = Array.from(regionData, ([region, intensity]) => ({
-      region,
-      intensity: Number((intensity ?? 0).toFixed(2))
-    }))
-      .filter(d => d.region !== "Unknown") // Filter out Unknown if you want
-      .sort((a, b) => b.intensity - a.intensity)
-      .slice(0, 8) // Take top regions for readability
 
     // Set up dimensions
     const margin = { top: 30, right: 20, bottom: 70, left: 120 }
@@ -135,7 +107,9 @@ const RegionChart = ({ data }: RegionChartProps) => {
       .on("mouseover", (event, d) => {
         tooltip.transition().duration(200).style("opacity", 0.9)
         tooltip
-          .html(`<strong>${d.region}</strong><br/>Intensity: ${d.intensity}`)
+          .html(
+            `<strong>${d.region}</strong><br/>Intensity: ${d.intensity.toFixed(2)}`
+          )
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY - 28 + "px")
         d3.select(event.currentTarget)
@@ -166,7 +140,7 @@ const RegionChart = ({ data }: RegionChartProps) => {
       .style("font-weight", "bold")
       .style("fill", "#333")
       .style("opacity", 0)
-      .text(d => d.intensity)
+      .text(d => d.intensity.toFixed(2))
       .transition()
       .duration(800)
       .delay((_d, i) => i * 100 + 800)
@@ -175,7 +149,7 @@ const RegionChart = ({ data }: RegionChartProps) => {
     return () => {
       d3.select("body").selectAll(".tooltip").remove()
     }
-  }, [data])
+  }, [chartData])
 
   return (
     <div className="w-full h-full">

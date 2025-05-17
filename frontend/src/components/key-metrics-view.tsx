@@ -1,16 +1,16 @@
-import type { DataRecord } from "./dashboard"
+import type { DashboardStatsResponse } from "@/services/reports/types"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Skeleton } from "./ui/skeleton"
 
 export default function KeyMetricsView({
-  filteredData,
+  data,
   isLoading
 }: {
-  filteredData: DataRecord[]
+  data: DashboardStatsResponse
   isLoading: Boolean
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium">Total Records</CardTitle>
@@ -19,7 +19,7 @@ export default function KeyMetricsView({
           {isLoading ? (
             <Skeleton className="h-10 w-20" />
           ) : (
-            <p className="text-2xl font-bold">{filteredData.length}</p>
+            <p className="text-2xl font-bold">{data.total_records}</p>
           )}
         </CardContent>
       </Card>
@@ -32,14 +32,7 @@ export default function KeyMetricsView({
             <Skeleton className="h-10 w-20" />
           ) : (
             <p className="text-2xl font-bold">
-              {filteredData.length
-                ? (
-                    filteredData.reduce(
-                      (sum, item) => sum + (item.intensity || 0),
-                      0
-                    ) / filteredData.length
-                  ).toFixed(1)
-                : "0"}
+              {data.avg_intensity.toFixed(2)}
             </p>
           )}
         </CardContent>
@@ -53,14 +46,21 @@ export default function KeyMetricsView({
             <Skeleton className="h-10 w-20" />
           ) : (
             <p className="text-2xl font-bold">
-              {filteredData.length
-                ? (
-                    filteredData.reduce(
-                      (sum, item) => sum + (item.likelihood || 0),
-                      0
-                    ) / filteredData.length
-                  ).toFixed(1)
-                : "0"}
+              {data.avg_likelihood.toFixed(2)}
+            </p>
+          )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium">Avg. Relevance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <Skeleton className="h-10 w-20" />
+          ) : (
+            <p className="text-2xl font-bold">
+              {data.avg_relevance.toFixed(2)}
             </p>
           )}
         </CardContent>

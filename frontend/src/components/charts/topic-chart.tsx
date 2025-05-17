@@ -1,44 +1,21 @@
+import type { TopicStats } from "@/services/reports/types"
 import * as d3 from "d3"
 import { useEffect, useRef } from "react"
-import { type DataRecord } from "../dashboard"
 
 interface TopicChartProps {
-  data: DataRecord[]
+  chartData: TopicStats[]
 }
 
-const TopicChart = ({ data }: TopicChartProps) => {
+const TopicChart = ({ chartData }: TopicChartProps) => {
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   useEffect(() => {
-    if (!data || data.length === 0 || !svgRef.current) {
+    if (!chartData || chartData.length === 0 || !svgRef.current) {
       return
     }
 
     // Clear previous chart
     d3.select(svgRef.current).selectAll("*").remove()
-
-    // Filter data to include only records with topic values
-    const validData = data.filter(
-      d => d.topic !== null && d.topic !== undefined && d.topic !== ""
-    )
-
-    if (validData.length === 0) return
-
-    // Count occurrences of each topic
-    const topicCounts = d3.rollup(
-      validData,
-      v => v.length,
-      d => d.topic || "Unknown"
-    )
-
-    // Convert Map to array for easier manipulation
-    const chartData = Array.from(topicCounts, ([topic, count]) => ({
-      topic,
-      count
-    }))
-      .filter(d => d.topic !== "Unknown") // Filter out Unknown if you want
-      .sort((a, b) => b.count - a.count) // Sort by count descending
-      .slice(0, 10) // Take top 10 for readability
 
     // Calculate total for percentage
     const total = chartData.reduce((sum, item) => sum + item.count, 0)
@@ -203,7 +180,7 @@ const TopicChart = ({ data }: TopicChartProps) => {
     return () => {
       d3.select("body").selectAll(".tooltip").remove()
     }
-  }, [data])
+  }, [chartData])
 
   return (
     <div className="w-full h-full">

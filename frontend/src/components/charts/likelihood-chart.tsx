@@ -1,41 +1,21 @@
+import type { LikelihoodStats } from "@/services/reports/types"
 import * as d3 from "d3"
 import { useEffect, useRef } from "react"
-import { type DataRecord } from "../dashboard"
 
 interface LikelihoodChartProps {
-  data: DataRecord[]
+  chartData: LikelihoodStats[]
 }
 
-const LikelihoodChart = ({ data }: LikelihoodChartProps) => {
+const LikelihoodChart = ({ chartData }: LikelihoodChartProps) => {
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   useEffect(() => {
-    if (!data || data.length === 0 || !svgRef.current) {
+    if (!chartData || chartData.length === 0 || !svgRef.current) {
       return
     }
 
     // Clear previous chart
     d3.select(svgRef.current).selectAll("*").remove()
-
-    // Filter data to include only records with likelihood value
-    const validData = data.filter(
-      d => d.likelihood !== null && d.likelihood !== undefined
-    )
-
-    if (validData.length === 0) return
-
-    // Group data by likelihood value and count occurrences
-    const likelihoodCounts = d3.rollup(
-      validData,
-      v => v.length,
-      d => d.likelihood
-    )
-
-    // Convert Map to array for easier manipulation
-    const chartData = Array.from(likelihoodCounts, ([likelihood, count]) => ({
-      likelihood: Number(likelihood),
-      count
-    })).sort((a, b) => a.likelihood - b.likelihood)
 
     // Set up dimensions
     const margin = { top: 30, right: 30, bottom: 50, left: 50 }
@@ -222,7 +202,7 @@ const LikelihoodChart = ({ data }: LikelihoodChartProps) => {
     return () => {
       d3.select("body").selectAll(".tooltip").remove()
     }
-  }, [data])
+  }, [chartData])
 
   return (
     <div className="w-full h-full">

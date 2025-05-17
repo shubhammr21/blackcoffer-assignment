@@ -1,17 +1,17 @@
+import type { DashboardStatsResponse } from "@/services/reports/types"
 import IntensityChart from "./charts/intensity-chart"
 import LikelihoodChart from "./charts/likelihood-chart"
 import RegionChart from "./charts/region-chart"
 import TopicChart from "./charts/topic-chart"
 import YearlyTrendChart from "./charts/yearly-trend-chart"
-import type { DataRecord } from "./dashboard"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Skeleton } from "./ui/skeleton"
 
 export default function ChartsView({
-  filteredData,
+  data,
   isLoading
 }: {
-  filteredData: DataRecord[]
+  data: DashboardStatsResponse
   isLoading: Boolean
 }) {
   return (
@@ -24,7 +24,7 @@ export default function ChartsView({
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
-            <RegionChart data={filteredData} />
+            <RegionChart chartData={data.regions} />
           )}
         </CardContent>
       </Card>
@@ -37,7 +37,7 @@ export default function ChartsView({
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
-            <LikelihoodChart data={filteredData} />
+            <LikelihoodChart chartData={data.likelihoods} />
           )}
         </CardContent>
       </Card>
@@ -50,7 +50,7 @@ export default function ChartsView({
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
-            <TopicChart data={filteredData} />
+            <TopicChart chartData={data.topics} />
           )}
         </CardContent>
       </Card>
@@ -63,7 +63,7 @@ export default function ChartsView({
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
-            <YearlyTrendChart data={filteredData} />
+            <YearlyTrendChart yearlyData={data.yearly_trends} />
           )}
         </CardContent>
       </Card>
@@ -76,7 +76,7 @@ export default function ChartsView({
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
-            <IntensityChart data={filteredData} />
+            <IntensityChart chartData={data.sectors} />
           )}
         </CardContent>
       </Card>

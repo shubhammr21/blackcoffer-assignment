@@ -1,44 +1,23 @@
+import type { SectorStats } from "@/services/reports/types"
 import * as d3 from "d3"
 import { useEffect, useRef } from "react"
-import { type DataRecord } from "../dashboard"
 
 interface IntensityChartProps {
-  data: DataRecord[]
+  chartData: SectorStats[]
 }
 
-const IntensityChart = ({ data }: IntensityChartProps) => {
+const IntensityChart = ({ chartData: chartData }: IntensityChartProps) => {
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   useEffect(() => {
-    if (!data || data.length === 0 || !svgRef.current) {
+    if (!chartData || chartData.length === 0 || !svgRef.current) {
       return
     }
 
     // Clear previous chart
     d3.select(svgRef.current).selectAll("*").remove()
 
-    // Filter data to include only records with intensity value
-    const validData = data.filter(
-      d => d.intensity !== null && d.intensity !== undefined
-    )
-
-    if (validData.length === 0) return
-
-    // Group data by sector and calculate average intensity
-    const sectorData = d3.rollup(
-      validData,
-      v => d3.mean(v, d => d.intensity || 0),
-      d => d.sector || "Unknown"
-    )
-
     // Convert Map to array for easier manipulation
-    const chartData = Array.from(sectorData, ([sector, intensity]) => ({
-      sector,
-      intensity: Number((intensity ?? 0).toFixed(2))
-    }))
-      .filter(d => d.sector !== "Unknown") // Filter out Unknown if you want
-      .sort((a, b) => b.intensity - a.intensity) // Sort by intensity
-      .slice(0, 10) // Take top 10 for readability
 
     // Set up dimensions
     const margin = { top: 30, right: 30, bottom: 100, left: 60 }
@@ -142,7 +121,9 @@ const IntensityChart = ({ data }: IntensityChartProps) => {
       .on("mouseover", (event, d) => {
         tooltip.transition().duration(200).style("opacity", 0.9)
         tooltip
-          .html(`<strong>${d.sector}</strong><br/>Intensity: ${d.intensity}`)
+          .html(
+            `<strong>${d.sector}</strong><br/>Intensity: ${d.intensity.toFixed(2)}`
+          )
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY - 28 + "px")
         d3.select(event.currentTarget)
@@ -171,7 +152,7 @@ const IntensityChart = ({ data }: IntensityChartProps) => {
       .attr("text-anchor", "middle")
       .style("font-size", "12px")
       .style("opacity", 0)
-      .text(d => d.intensity)
+      .text(d => d.intensity.toFixed(2))
       .transition()
       .delay(1000)
       .duration(500)
@@ -180,7 +161,7 @@ const IntensityChart = ({ data }: IntensityChartProps) => {
     return () => {
       d3.select("body").selectAll(".tooltip").remove()
     }
-  }, [data])
+  }, [chartData])
 
   return (
     <div className="w-full h-full">

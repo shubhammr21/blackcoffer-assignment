@@ -1,61 +1,21 @@
+import type { YearlyTrendStats } from "@/services/reports/types"
 import * as d3 from "d3"
 import { useEffect, useRef } from "react"
-import { type DataRecord } from "../dashboard"
 
 interface YearlyTrendChartProps {
-  data: DataRecord[]
+  yearlyData: YearlyTrendStats[]
 }
 
-const YearlyTrendChart = ({ data }: YearlyTrendChartProps) => {
+const YearlyTrendChart = ({ yearlyData }: YearlyTrendChartProps) => {
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   useEffect(() => {
-    if (!data || data.length === 0 || !svgRef.current) {
+    if (!yearlyData || yearlyData.length === 0 || !svgRef.current) {
       return
     }
 
     // Clear previous chart
     d3.select(svgRef.current).selectAll("*").remove()
-
-    // Filter data to include only records with year and intensity values
-    const validData = data.filter(
-      d =>
-        (d.start_year !== null && d.start_year !== undefined) ||
-        (d.end_year !== null && d.end_year !== undefined)
-    )
-
-    if (validData.length === 0) return
-
-    // Prepare data for yearly trends, using either start_year or end_year (prefer start_year)
-    const yearsData = validData
-      .map(d => ({
-        year: d.start_year || d.end_year || 0,
-        intensity: d.intensity || 0,
-        relevance: d.relevance || 0,
-        likelihood: d.likelihood || 0
-      }))
-      .filter(d => d.year > 0) // Filter out invalid years
-
-    // Group by year
-    const yearlyData = Array.from(
-      d3.rollup(
-        yearsData,
-        v => ({
-          intensity: d3.mean(v, d => d.intensity),
-          relevance: d3.mean(v, d => d.relevance),
-          likelihood: d3.mean(v, d => d.likelihood),
-          count: v.length
-        }),
-        d => d.year
-      ),
-      ([year, values]) => ({
-        year,
-        intensity: values.intensity || 0,
-        relevance: values.relevance || 0,
-        likelihood: values.likelihood || 0,
-        count: values.count
-      })
-    ).sort((a, b) => a.year - b.year) // Sort by year
 
     // Set up dimensions
     const margin = { top: 30, right: 100, bottom: 50, left: 60 }
@@ -421,7 +381,7 @@ const YearlyTrendChart = ({ data }: YearlyTrendChartProps) => {
     return () => {
       d3.select("body").selectAll(".tooltip").remove()
     }
-  }, [data])
+  }, [yearlyData])
 
   return (
     <div className="w-full h-full">
