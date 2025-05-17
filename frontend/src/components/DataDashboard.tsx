@@ -138,24 +138,6 @@ const DataDashboard = () => {
     }))
   }
 
-  // Get unique values for filter options
-  const getFilterOptions = (field: keyof DataRecord) => {
-    if (!data.length) return []
-
-    const uniqueValues = new Set<string>()
-
-    data.forEach(item => {
-      const value = item[field]
-      if (value && typeof value === "string") {
-        uniqueValues.add(value)
-      } else if (value && typeof value === "number") {
-        uniqueValues.add(value.toString())
-      }
-    })
-
-    return Array.from(uniqueValues).sort()
-  }
-
   return (
     <div className="space-y-6">
       {/* Filter panel */}
@@ -164,19 +146,7 @@ const DataDashboard = () => {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <FilterPanel
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            filterOptions={{
-              endYears: getFilterOptions("end_year"),
-              topics: getFilterOptions("topic"),
-              sectors: getFilterOptions("sector"),
-              regions: getFilterOptions("region"),
-              pestles: getFilterOptions("pestle"),
-              sources: getFilterOptions("source"),
-              countries: getFilterOptions("country")
-            }}
-          />
+          <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
         </CardContent>
       </Card>
 

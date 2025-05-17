@@ -11,29 +11,18 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { getFetchFilterOptionsQuery } from "@/services/reports/queries"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { type Filters } from "./DataDashboard"
-
-interface FilterOptions {
-  endYears: string[]
-  topics: string[]
-  sectors: string[]
-  regions: string[]
-  pestles: string[]
-  sources: string[]
-  countries: string[]
-}
 
 interface FilterPanelProps {
   filters: Filters
   onFilterChange: (filterName: keyof Filters, value: string) => void
-  filterOptions: FilterOptions
 }
 
-const FilterPanel = ({
-  filters,
-  onFilterChange,
-  filterOptions
-}: FilterPanelProps) => {
+const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
+  const { data: filterOptions } = useSuspenseQuery(getFetchFilterOptionsQuery())
+
   return (
     <Accordion
       type="single"
@@ -57,8 +46,8 @@ const FilterPanel = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.endYears.map(year => (
-                    <SelectItem key={year} value={year}>
+                  {filterOptions.end_years.map(year => (
+                    <SelectItem key={year} value={String(year)}>
                       {year}
                     </SelectItem>
                   ))}
