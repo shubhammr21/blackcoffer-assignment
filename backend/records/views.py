@@ -1,4 +1,5 @@
-from django.db.models import Avg, Count
+from django.db.models import Avg, Case, Count, FloatField, IntegerField, Q, Value, When
+from django.db.models.functions import Cast, Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
@@ -24,60 +25,103 @@ class DataRecordList(generics.ListAPIView):
 
 
 class DataStatsView(generics.GenericAPIView):
+    filterset_class = DataRecordFilter
+
+    def get_queryset(self):
+        return DataRecord.objects.all()
+
     def get(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
         stats = {
-            "sectors": list(
-                DataRecord.objects.values("sector").annotate(count=Count("sector"))
-                # .order_by("-count")
+            "avg_intensity": (queryset.aggregate(avg=Avg("intensity"))["avg"]),
+            "avg_likelihood": (queryset.aggregate(avg=Avg("likelihood"))["avg"]),
+            "avg_relevance": (queryset.aggregate(avg=Avg("relevance"))["avg"]),
+            "total_records": queryset.count(),
+            "sectors": (
+                queryset.exclude(sector__isnull=True)
+                .exclude(intensity__isnull=True)
+                .values("sector")
+                .annotate(intensity=Avg("intensity"), count=Count("id"))
+                .order_by("-intensity")
             ),
-            "topics": list(
-                DataRecord.objects.values("topic").annotate(count=Count("topic"))
-                # .order_by("-count")
+            "topics": (
+                queryset.exclude(topic__isnull=True)
+                .values("topic")
+                .annotate(count=Count("id"))
+                .order_by("-count")
             ),
-            "regions": list(
-                DataRecord.objects.values("region").annotate(count=Count("region"))
-                # .order_by("-count")
+            "regions": (
+                queryset.exclude(region__isnull=True)
+                .exclude(intensity__isnull=True)
+                .values("region")
+                .annotate(intensity=Avg("intensity"), count=Count("id"))
+                .order_by("-intensity")
             ),
-            "avg_intensity": DataRecord.objects.aggregate(avg=Avg("intensity"))["avg"],
-            "avg_likelihood": DataRecord.objects.aggregate(avg=Avg("likelihood"))[
-                "avg"
-            ],
-            "avg_relevance": DataRecord.objects.aggregate(avg=Avg("relevance"))["avg"],
+            "yearly_trends": (
+                (
+                    queryset.filter(
+                        Q(start_year__isnull=False) | Q(end_year__isnull=False),
+                        Q(intensity__isnull=False)
+                        | Q(relevance__isnull=False)
+                        | Q(likelihood__isnull=False),
+                    )
+                    .annotate(
+                        valid_year=Coalesce("start_year", "end_year"),
+                        # Use different names for annotated fields
+                        intensity_value=Case(
+                            When(intensity__isnull=True, then=Value(0)),
+                            default="intensity",
+                            output_field=FloatField(),
+                        ),
+                        relevance_value=Case(
+                            When(relevance__isnull=True, then=Value(0)),
+                            default="relevance",
+                            output_field=FloatField(),
+                        ),
+                        likelihood_value=Case(
+                            When(likelihood__isnull=True, then=Value(0)),
+                            default="likelihood",
+                            output_field=FloatField(),
+                        ),
+                    )
+                    .filter(valid_year__gt=0)
+                    .values("valid_year")
+                    .annotate(
+                        intensity=Avg("intensity_value"),
+                        relevance=Avg("relevance_value"),
+                        likelihood=Avg("likelihood_value"),
+                        count=Count("id"),
+                    )
+                    .order_by("valid_year")
+                )
+            ),
+            "likelihoods": (
+                queryset.exclude(likelihood__isnull=True)
+                .values("likelihood")
+                .annotate(count=Count("id"))
+                .order_by("-count")
+            ),
         }
         return Response(stats)
 
 
 class DataFilterOptionsView(generics.GenericAPIView):
     def get(self, request):
-        return Response(
-            {
-                "end_years": DataRecord.objects.exclude(end_year__isnull=True)
-                .values_list("end_year", flat=True)
-                .distinct()
-                .order_by("end_year"),
-                "topics": DataRecord.objects.exclude(topic__isnull=True)
-                .values_list("topic", flat=True)
-                .distinct()
-                .order_by("topic"),
-                "sectors": DataRecord.objects.exclude(sector__isnull=True)
-                .values_list("sector", flat=True)
-                .distinct()
-                .order_by("sector"),
-                "regions": DataRecord.objects.exclude(region__isnull=True)
-                .values_list("region", flat=True)
-                .distinct()
-                .order_by("region"),
-                "pestles": DataRecord.objects.exclude(pestle__isnull=True)
-                .values_list("pestle", flat=True)
-                .distinct()
-                .order_by("pestle"),
-                "sources": DataRecord.objects.exclude(source__isnull=True)
-                .values_list("source", flat=True)
-                .distinct()
-                .order_by("source"),
-                "countries": DataRecord.objects.exclude(country__isnull=True)
-                .values_list("country", flat=True)
-                .distinct()
-                .order_by("country"),
-            }
-        )
+        def distinct_values(field, output_field=None):
+            qs = DataRecord.objects.exclude(**{f"{field}__isnull": True})
+            if output_field:
+                qs = qs.annotate(val=Cast(field, output_field))
+                field = "val"
+            return qs.values_list(field, flat=True).distinct().order_by(field)
+
+        options = {
+            "end_years": list(distinct_values("end_year", IntegerField())),
+            "topics": list(distinct_values("topic")),
+            "sectors": list(distinct_values("sector")),
+            "regions": list(distinct_values("region")),
+            "pestles": list(distinct_values("pestle")),
+            "sources": list(distinct_values("source")),
+            "countries": list(distinct_values("country")),
+        }
+
+        return Response(options)
