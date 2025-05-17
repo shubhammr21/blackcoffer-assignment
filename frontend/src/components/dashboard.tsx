@@ -2,16 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import IntensityChart from "./charts/intensity-chart"
-import LikelihoodChart from "./charts/likelihood-chart"
-import RegionChart from "./charts/region-chart"
-import TopicChart from "./charts/topic-chart"
-import YearlyTrendChart from "./charts/yearly-trend-chart"
 import DataTable from "./data-table"
 import FilterPanel from "./filter-panel"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import mockData from "../data/mockData"
+import ChartsView from "./charts-view"
+import KeyMetricsView from "./key-metrics-view"
 
 // Define data record interface to match Django model
 export interface DataRecord {
@@ -151,66 +148,7 @@ const DataDashboard = () => {
       </Card>
 
       {/* Key metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Records</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-10 w-20" />
-            ) : (
-              <p className="text-2xl font-bold">{filteredData.length}</p>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Avg. Intensity
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-10 w-20" />
-            ) : (
-              <p className="text-2xl font-bold">
-                {filteredData.length
-                  ? (
-                      filteredData.reduce(
-                        (sum, item) => sum + (item.intensity || 0),
-                        0
-                      ) / filteredData.length
-                    ).toFixed(1)
-                  : "0"}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Avg. Likelihood
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-10 w-20" />
-            ) : (
-              <p className="text-2xl font-bold">
-                {filteredData.length
-                  ? (
-                      filteredData.reduce(
-                        (sum, item) => sum + (item.likelihood || 0),
-                        0
-                      ) / filteredData.length
-                    ).toFixed(1)
-                  : "0"}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      <KeyMetricsView filteredData={filteredData} isLoading={isLoading} />
 
       {/* Visualizations */}
       <Tabs defaultValue="charts">
@@ -220,72 +158,7 @@ const DataDashboard = () => {
         </TabsList>
 
         <TabsContent value="charts">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Intensity by Region</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                {isLoading ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <RegionChart data={filteredData} />
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Likelihood Distribution</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                {isLoading ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <LikelihoodChart data={filteredData} />
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Topics Distribution</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                {isLoading ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <TopicChart data={filteredData} />
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Yearly Trends</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                {isLoading ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <YearlyTrendChart data={filteredData} />
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Intensity Analysis</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[400px]">
-                {isLoading ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <IntensityChart data={filteredData} />
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          <ChartsView filteredData={filteredData} isLoading={isLoading} />
         </TabsContent>
 
         <TabsContent value="table">
