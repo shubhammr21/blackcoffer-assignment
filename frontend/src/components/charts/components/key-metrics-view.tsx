@@ -1,6 +1,6 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import type { DashboardStatsResponse } from "@/services/reports/types"
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { Skeleton } from "./ui/skeleton"
 
 export default function KeyMetricsView({
   data,

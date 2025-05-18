@@ -1,11 +1,11 @@
 import type { DashboardStatsResponse } from "@/services/reports/types"
-import IntensityChart from "./charts/intensity-chart"
-import LikelihoodChart from "./charts/likelihood-chart"
-import RegionChart from "./charts/region-chart"
-import TopicChart from "./charts/topic-chart"
-import YearlyTrendChart from "./charts/yearly-trend-chart"
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { Skeleton } from "./ui/skeleton"
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
+import { Skeleton } from "../../ui/skeleton"
+import IntensityChart from "./intensity-chart"
+import LikelihoodChart from "./likelihood-chart"
+import RegionChart from "./region-chart"
+import TopicChart from "./topic-chart"
+import YearlyTrendChart from "./yearly-trend-chart"
 
 export default function ChartsView({
   data,

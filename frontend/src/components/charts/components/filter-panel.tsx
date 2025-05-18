@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@/components/ui/accordion"
+import { Badge } from "@/components/ui/badge"
 import {
   Select,
   SelectContent,
@@ -14,7 +15,6 @@ import {
 import { getFetchFacetsQuery } from "@/services/reports/queries"
 import type { RecordFilterParams } from "@/services/reports/types"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { Badge } from "./ui/badge"
 
 interface FilterPanelProps {
   filters: RecordFilterParams

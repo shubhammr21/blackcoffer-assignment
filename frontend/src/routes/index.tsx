@@ -1,4 +1,4 @@
-import DataDashboard from "@/components/dashboard"
+import DataDashboard from "@/components/charts/page"
 import type { RecordFilterParams } from "@/services/reports/types"
 import { createFileRoute } from "@tanstack/react-router"
 
