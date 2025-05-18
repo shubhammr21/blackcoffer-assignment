@@ -12,6 +12,7 @@ from django.db.models import (
 from django.db.models.functions import Cast, Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
+from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -29,9 +30,22 @@ class StandardResultsSetPagination(PageNumberPagination):
 class DataRecordList(generics.ListAPIView):
     queryset = DataRecord.objects.all()
     serializer_class = DataRecordSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = DataRecordFilter
     pagination_class = StandardResultsSetPagination
+    ordering_fields = [
+        "end_year",
+        "intensity",
+        "sector",
+        "topic",
+        "region",
+        "start_year",
+        "added",
+        "country",
+        "pestle",
+        "title",
+        "likelihood",
+    ]
 
 
 class DataStatsView(generics.GenericAPIView):
