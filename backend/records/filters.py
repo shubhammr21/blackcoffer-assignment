@@ -8,6 +8,7 @@ class DataRecordFilter(django_filters.FilterSet):
     # Exact matches
     end_year = django_filters.NumberFilter(field_name="end_year")
     start_year = django_filters.NumberFilter(field_name="start_year")
+    title = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
     sector = django_filters.CharFilter(field_name="sector", lookup_expr="icontains")
     country = django_filters.CharFilter(field_name="country", lookup_expr="icontains")
     region = django_filters.CharFilter(field_name="region", lookup_expr="icontains")
