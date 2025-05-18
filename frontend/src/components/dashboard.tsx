@@ -5,35 +5,10 @@ import DataTable from "./data-table"
 import FilterPanel from "./filter-panel"
 
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  getFetchDashboardStatsQuery,
-  getFetchDashboardTableQuery
-} from "@/services/reports/queries"
+import { getFetchDashboardStatsQuery } from "@/services/reports/queries"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import ChartsView from "./charts-view"
 import KeyMetricsView from "./key-metrics-view"
-
-// Define data record interface to match Django model
-export interface DataRecord {
-  id: number
-  end_year: number | null
-  intensity: number | null
-  sector: string | null
-  topic: string | null
-  insight: string | null
-  url: string | null
-  region: string | null
-  start_year: number | null
-  impact: string | null
-  added: string | null
-  published: string | null
-  country: string | null
-  relevance: number | null
-  pestle: string | null
-  source: string | null
-  title: string | null
-  likelihood: number | null
-}
 
 // Interface for filters
 export interface Filters {
@@ -57,12 +32,7 @@ const DataDashboard = () => {
     country: ""
   })
 
-  const { data: tableData, isLoading } = useSuspenseQuery(
-    getFetchDashboardTableQuery()
-  )
-  const { data: statsData, isLoading: statsIsLoading } = useSuspenseQuery(
-    getFetchDashboardStatsQuery()
-  )
+  const { data, isLoading } = useSuspenseQuery(getFetchDashboardStatsQuery())
 
   // Handle filter changes
   const handleFilterChange = (filterName: keyof Filters, value: string) => {
@@ -85,7 +55,7 @@ const DataDashboard = () => {
       </Card>
 
       {/* Key metrics */}
-      <KeyMetricsView data={statsData} isLoading={statsIsLoading} />
+      <KeyMetricsView data={data} isLoading={isLoading} />
 
       {/* Visualizations */}
       <Tabs defaultValue="charts">
@@ -95,7 +65,7 @@ const DataDashboard = () => {
         </TabsList>
 
         <TabsContent value="charts">
-          <ChartsView data={statsData} isLoading={statsIsLoading} />
+          <ChartsView data={data} isLoading={isLoading} />
         </TabsContent>
 
         <TabsContent value="table">
@@ -112,7 +82,7 @@ const DataDashboard = () => {
                   <Skeleton className="h-10 w-full" />
                 </div>
               ) : (
-                <DataTable data={tableData.results} />
+                <DataTable />
               )}
             </CardContent>
           </Card>

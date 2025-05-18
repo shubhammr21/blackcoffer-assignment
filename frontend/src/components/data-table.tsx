@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { type DataRecord } from "./dashboard"
 
 import {
   Pagination,
@@ -18,13 +17,15 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
+import { getFetchDashboardTableQuery } from "@/services/reports/queries"
+import { useSuspenseQuery } from "@tanstack/react-query"
 
-interface DataTableProps {
-  data: DataRecord[]
-}
-
-const DataTable = ({ data }: DataTableProps) => {
+const DataTable = () => {
   const [currentPage, setCurrentPage] = useState(1)
+  const { data: xData, isLoading } = useSuspenseQuery(
+    getFetchDashboardTableQuery()
+  )
+  const data = xData.results
   const itemsPerPage = 10
 
   // Calculate pagination
