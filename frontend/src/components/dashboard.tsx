@@ -1,46 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useState } from "react"
 import DataTable from "./data-table"
 import FilterPanel from "./filter-panel"
 
 import { Skeleton } from "@/components/ui/skeleton"
+import { useFilters } from "@/hooks/use-filters"
 import { getFetchDashboardStatsQuery } from "@/services/reports/queries"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import ChartsView from "./charts-view"
 import KeyMetricsView from "./key-metrics-view"
 
-// Interface for filters
-export interface Filters {
-  end_year: string
-  topic: string
-  sector: string
-  region: string
-  pestle: string
-  source: string
-  country: string
-}
-
 const DataDashboard = () => {
-  const [filters, setFilters] = useState<Filters>({
-    end_year: "",
-    topic: "",
-    sector: "",
-    region: "",
-    pestle: "",
-    source: "",
-    country: ""
-  })
+  const { filters, setFilters } = useFilters("/")
 
-  const { data, isLoading } = useSuspenseQuery(getFetchDashboardStatsQuery())
-
-  // Handle filter changes
-  const handleFilterChange = (filterName: keyof Filters, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterName]: value
-    }))
-  }
+  const { data, isLoading } = useSuspenseQuery(
+    getFetchDashboardStatsQuery(filters)
+  )
 
   return (
     <div className="space-y-6">
@@ -50,7 +25,7 @@ const DataDashboard = () => {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
+          <FilterPanel filters={filters} onFilterChange={setFilters} />
         </CardContent>
       </Card>
 

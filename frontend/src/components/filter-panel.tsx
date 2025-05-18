@@ -12,17 +12,18 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { getFetchFacetsQuery } from "@/services/reports/queries"
+import type { RecordFilterParams } from "@/services/reports/types"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { type Filters } from "./dashboard"
 import { Badge } from "./ui/badge"
 
 interface FilterPanelProps {
-  filters: Filters
-  onFilterChange: (filterName: keyof Filters, value: string) => void
+  filters: RecordFilterParams
+  onFilterChange: (filter: RecordFilterParams) => void
 }
 
 const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
   const { data: filterOptions } = useSuspenseQuery(getFetchFacetsQuery())
+  const getFilterValue = (value: string | undefined) => value ?? "all"
 
   return (
     <Accordion
@@ -39,8 +40,13 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">End Year</label>
               <Select
-                value={filters.end_year}
-                onValueChange={value => onFilterChange("end_year", value)}
+                value={getFilterValue(filters.end_year?.toString())}
+                onValueChange={value =>
+                  onFilterChange({
+                    ...filters,
+                    end_year: value === "all" ? undefined : parseInt(value)
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select end year" />
@@ -48,7 +54,10 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
                 <SelectContent>
                   <SelectItem value="all">Any</SelectItem>
                   {filterOptions.end_year.map(facet => (
-                    <SelectItem key={facet.label} value={String(facet.value)}>
+                    <SelectItem
+                      key={facet.label}
+                      value={facet.value.toString()}
+                    >
                       <span className="truncate">{facet.label}</span>
                       <Badge
                         variant="secondary"
@@ -66,8 +75,13 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Topic</label>
               <Select
-                value={filters.topic}
-                onValueChange={value => onFilterChange("topic", value)}
+                value={getFilterValue(filters.topic)}
+                onValueChange={value =>
+                  onFilterChange({
+                    ...filters,
+                    topic: value === "all" ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select topic" />
@@ -93,8 +107,13 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Sector</label>
               <Select
-                value={filters.sector}
-                onValueChange={value => onFilterChange("sector", value)}
+                value={getFilterValue(filters.sector)}
+                onValueChange={value =>
+                  onFilterChange({
+                    ...filters,
+                    sector: value === "all" ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select sector" />
@@ -120,8 +139,13 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Region</label>
               <Select
-                value={filters.region}
-                onValueChange={value => onFilterChange("region", value)}
+                value={getFilterValue(filters.region)}
+                onValueChange={value =>
+                  onFilterChange({
+                    ...filters,
+                    region: value === "all" ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select region" />
@@ -147,8 +171,13 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">PESTLE</label>
               <Select
-                value={filters.pestle}
-                onValueChange={value => onFilterChange("pestle", value)}
+                value={getFilterValue(filters.pestle)}
+                onValueChange={value =>
+                  onFilterChange({
+                    ...filters,
+                    pestle: value === "all" ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select PESTLE" />
@@ -174,8 +203,13 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Source</label>
               <Select
-                value={filters.source}
-                onValueChange={value => onFilterChange("source", value)}
+                value={getFilterValue(filters.source)}
+                onValueChange={value =>
+                  onFilterChange({
+                    ...filters,
+                    source: value === "all" ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select source" />
@@ -201,21 +235,20 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Country</label>
               <Select
-                value={filters.country}
-                onValueChange={value => onFilterChange("country", value)}
+                value={getFilterValue(filters.country)}
+                onValueChange={value =>
+                  onFilterChange({
+                    ...filters,
+                    country: value === "all" ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">
-                    <span>Any country</span>
-                    <Badge variant="outline" className="ml-2">
-                      {filterOptions.country.reduce(
-                        (sum, facet) => sum + facet.count,
-                        0
-                      )}
-                    </Badge>
+                    <span>Any</span>
                   </SelectItem>
                   {filterOptions.country.map(facet => (
                     <SelectItem key={facet.label} value={String(facet.value)}>

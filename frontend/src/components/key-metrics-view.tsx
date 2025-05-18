@@ -32,7 +32,7 @@ export default function KeyMetricsView({
             <Skeleton className="h-10 w-20" />
           ) : (
             <p className="text-2xl font-bold">
-              {data.avg_intensity.toFixed(2)}
+              {(data.avg_intensity ?? 0).toFixed(2)}
             </p>
           )}
         </CardContent>
@@ -46,7 +46,7 @@ export default function KeyMetricsView({
             <Skeleton className="h-10 w-20" />
           ) : (
             <p className="text-2xl font-bold">
-              {data.avg_likelihood.toFixed(2)}
+              {(data.avg_likelihood ?? 0).toFixed(2)}
             </p>
           )}
         </CardContent>
@@ -60,7 +60,7 @@ export default function KeyMetricsView({
             <Skeleton className="h-10 w-20" />
           ) : (
             <p className="text-2xl font-bold">
-              {data.avg_relevance.toFixed(2)}
+              {(data.avg_relevance ?? 0).toFixed(2)}
             </p>
           )}
         </CardContent>
