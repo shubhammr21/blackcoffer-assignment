@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query"
+import { keepPreviousData, queryOptions } from "@tanstack/react-query"
 import {
   fetchDashboardStats,
   fetchDashboardTable,
@@ -26,6 +26,7 @@ export const getFetchDashboardTableQuery = (
   return queryOptions({
     queryKey: [REPORT_DATA_RECORDS_KEY, params],
     queryFn: () => fetchDashboardTable(params),
+    placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5
   })
 }
