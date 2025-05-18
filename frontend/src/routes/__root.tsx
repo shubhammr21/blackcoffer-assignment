@@ -1,6 +1,7 @@
 import RootLayout from "@/components/root-layout"
-import { createRootRoute } from "@tanstack/react-router"
+import type { RouterContext } from "@/main"
+import { createRootRouteWithContext } from "@tanstack/react-router"
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout
 })

@@ -5,15 +5,23 @@ import ReactDOM from "react-dom/client"
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"
 
+import { getQueryClient } from "@/components/providers/query-client"
+import type { QueryClient } from "@tanstack/react-query"
 import NotFound from "./components/not-found"
 import Providers from "./components/providers"
 import reportWebVitals from "./reportWebVitals"
 import "./styles.css"
 
+export interface RouterContext {
+  queryClient: QueryClient
+}
+
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  context: {},
+  context: {
+    queryClient: getQueryClient()
+  },
   defaultPreload: "intent",
   scrollRestoration: true,
   defaultStructuralSharing: true,
