@@ -6,7 +6,7 @@ export type PaginatedData<T> = {
 }
 
 export type PaginationParams = { page: number; page_size: number }
-export type SortParams = { sortBy: `${string}.${"asc" | "desc"}` }
+export type SortParams = { ordering: `${"" | "-"}${string}` }
 export type Filters<T> = Partial<T & PaginationParams & SortParams>
 
 export interface RecordFilterParams {

@@ -15,14 +15,14 @@ export const stateToSortBy = (sorting: SortingState | undefined) => {
 
   const sort = sorting[0]
 
-  return `${sort.id}.${sort.desc ? "desc" : "asc"}` as const
+  return `${sort.desc ? "-" : ""}${sort.id}` as const
 }
 
-export const sortByToState = (sortBy: SortParams["sortBy"] | undefined) => {
+export const sortByToState = (sortBy: SortParams["ordering"] | undefined) => {
   if (!sortBy) return []
 
-  const [id, desc] = sortBy.split(".")
-  return [{ id, desc: desc === "desc" }]
+  const desc = sortBy[0] === "-"
+  return [{ id: desc ? sortBy.slice(1) : sortBy, desc }]
 }
 
 export default function DataRecordTablePage() {
@@ -32,7 +32,8 @@ export default function DataRecordTablePage() {
     pageIndex: (filters.page ?? DEFAULT_PAGE_INDEX) - 1,
     pageSize: filters.page_size ?? DEFAULT_PAGE_SIZE
   }
-  const sortingState = sortByToState(filters.sortBy)
+  const sortingState = sortByToState(filters.ordering)
+  console.log(sortingState)
   const columns = useMemo(() => recordColumns, [])
 
   if (isLoading) return null
@@ -72,7 +73,7 @@ export default function DataRecordTablePage() {
                   typeof updaterOrValue === "function"
                     ? updaterOrValue(sortingState)
                     : updaterOrValue
-                return setFilters({ sortBy: stateToSortBy(newSortingState) })
+                return setFilters({ ordering: stateToSortBy(newSortingState) })
               }}
             />
           </div>
