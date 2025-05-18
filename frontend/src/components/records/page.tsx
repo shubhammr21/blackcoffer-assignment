@@ -33,7 +33,6 @@ export default function DataRecordTablePage() {
     pageSize: filters.page_size ?? DEFAULT_PAGE_SIZE
   }
   const sortingState = sortByToState(filters.ordering)
-  console.log(sortingState)
   const columns = useMemo(() => recordColumns, [])
 
   if (isLoading) return null

@@ -1,5 +1,7 @@
 import { Outlet } from "@tanstack/react-router"
+import { Suspense } from "react"
 import Header from "./header"
+import TanStackDevtools from "./tanstack-devtools"
 
 export default function RootLayout() {
   return (
@@ -10,6 +12,9 @@ export default function RootLayout() {
           <Outlet />
         </main>
       </div>
+      <Suspense>
+        <TanStackDevtools />
+      </Suspense>
     </>
   )
 }

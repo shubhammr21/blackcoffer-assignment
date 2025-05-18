@@ -22,8 +22,6 @@ interface DataTablePaginationProps<TData> {
 export function DataTablePagination<TData>({
   table
 }: DataTablePaginationProps<TData>) {
-  console.log(table.getState().pagination)
-  console.log(table)
   return (
     <div className="flex items-center space-x-6 lg:space-x-8">
       <div className="flex items-center space-x-2">
