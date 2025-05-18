@@ -2,17 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { useFilters } from "@/hooks/use-filters"
 import { getFetchDashboardStatsQuery } from "@/services/reports/queries"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import ChartsView from "./components/charts-view"
+import { useQuery } from "@tanstack/react-query"
+import ChartsView, { ChartsViewSkeleton } from "./components/charts-view"
 import FilterPanel from "./components/filter-panel"
-import KeyMetricsView from "./components/key-metrics-view"
+import KeyMetricsView, {
+  KeyMetricsViewSkeleton
+} from "./components/key-metrics-view"
 
 const DataDashboard = () => {
   const { filters, setFilters } = useFilters("/")
 
-  const { data, isLoading } = useSuspenseQuery(
-    getFetchDashboardStatsQuery(filters)
-  )
+  const { data, isLoading } = useQuery(getFetchDashboardStatsQuery(filters))
 
   return (
     <div className="space-y-6">
@@ -27,10 +27,14 @@ const DataDashboard = () => {
       </Card>
 
       {/* Key metrics */}
-      <KeyMetricsView data={data} isLoading={isLoading} />
+      {isLoading || !data ? (
+        <KeyMetricsViewSkeleton />
+      ) : (
+        <KeyMetricsView data={data} />
+      )}
 
       {/* Visualizations */}
-      <ChartsView data={data} isLoading={isLoading} />
+      {isLoading || !data ? <ChartsViewSkeleton /> : <ChartsView data={data} />}
     </div>
   )
 }

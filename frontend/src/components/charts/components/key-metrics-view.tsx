@@ -1,70 +1,37 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import type { DashboardStatsResponse } from "@/services/reports/types"
+import { MetricCard, MetricCardSkeleton } from "./metric-card"
 
-export default function KeyMetricsView({
-  data,
-  isLoading
-}: {
-  data: DashboardStatsResponse
-  isLoading: Boolean
-}) {
+type KeyMetricsViewProps = { data: DashboardStatsResponse }
+
+const formatDecimal = (value: number | null) => (value ?? 0).toFixed(2)
+
+export default function KeyMetricsView({ data }: KeyMetricsViewProps) {
+  const metrics = [
+    { title: "Total Records", value: data.total_records },
+    { title: "Avg. Intensity", value: formatDecimal(data.avg_intensity) },
+    { title: "Avg. Likelihood", value: formatDecimal(data.avg_likelihood) },
+    { title: "Avg. Relevance", value: formatDecimal(data.avg_relevance) }
+  ]
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Total Records</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-10 w-20" />
-          ) : (
-            <p className="text-2xl font-bold">{data.total_records}</p>
-          )}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Avg. Intensity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-10 w-20" />
-          ) : (
-            <p className="text-2xl font-bold">
-              {(data.avg_intensity ?? 0).toFixed(2)}
-            </p>
-          )}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Avg. Likelihood</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-10 w-20" />
-          ) : (
-            <p className="text-2xl font-bold">
-              {(data.avg_likelihood ?? 0).toFixed(2)}
-            </p>
-          )}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Avg. Relevance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-10 w-20" />
-          ) : (
-            <p className="text-2xl font-bold">
-              {(data.avg_relevance ?? 0).toFixed(2)}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      {metrics.map(metric => (
+        <MetricCard key={metric.title} title={metric.title}>
+          <p className="text-2xl font-bold">{metric.value}</p>
+        </MetricCard>
+      ))}
+    </div>
+  )
+}
+
+export function KeyMetricsViewSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {Array(4)
+        .fill(0)
+        .map((_, i) => (
+          <MetricCardSkeleton key={i} />
+        ))}
     </div>
   )
 }

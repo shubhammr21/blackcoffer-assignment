@@ -1,85 +1,48 @@
 import type { DashboardStatsResponse } from "@/services/reports/types"
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
-import { Skeleton } from "../../ui/skeleton"
+import { ChartCard, ChartCardSkeleton } from "./chart-card"
 import IntensityChart from "./intensity-chart"
 import LikelihoodChart from "./likelihood-chart"
 import RegionChart from "./region-chart"
 import TopicChart from "./topic-chart"
 import YearlyTrendChart from "./yearly-trend-chart"
 
-export default function ChartsView({
-  data,
-  isLoading
-}: {
-  data: DashboardStatsResponse
-  isLoading: Boolean
-}) {
+type ChartsViewProps = { data: DashboardStatsResponse }
+
+export default function ChartsView({ data }: ChartsViewProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Intensity by Region</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px]">
-          {isLoading ? (
-            <Skeleton className="w-full h-full" />
-          ) : (
-            <RegionChart chartData={data.regions} />
-          )}
-        </CardContent>
-      </Card>
+      <ChartCard title="Intensity by Region" height="300px">
+        <RegionChart chartData={data.regions} />
+      </ChartCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Likelihood Distribution</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px]">
-          {isLoading ? (
-            <Skeleton className="w-full h-full" />
-          ) : (
-            <LikelihoodChart chartData={data.likelihoods} />
-          )}
-        </CardContent>
-      </Card>
+      <ChartCard title="Likelihood Distribution" height="300px">
+        <LikelihoodChart chartData={data.likelihoods} />
+      </ChartCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Topics Distribution</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px]">
-          {isLoading ? (
-            <Skeleton className="w-full h-full" />
-          ) : (
-            <TopicChart chartData={data.topics} />
-          )}
-        </CardContent>
-      </Card>
+      <ChartCard title="Topics Distribution" height="300px">
+        <TopicChart chartData={data.topics} />
+      </ChartCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Yearly Trends</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px]">
-          {isLoading ? (
-            <Skeleton className="w-full h-full" />
-          ) : (
-            <YearlyTrendChart yearlyData={data.yearly_trends} />
-          )}
-        </CardContent>
-      </Card>
+      <ChartCard title="Yearly Trends" height="300px">
+        <YearlyTrendChart yearlyData={data.yearly_trends} />
+      </ChartCard>
 
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle>Intensity Analysis</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[400px]">
-          {isLoading ? (
-            <Skeleton className="w-full h-full" />
-          ) : (
-            <IntensityChart chartData={data.sectors} />
-          )}
-        </CardContent>
-      </Card>
+      <ChartCard title="Intensity Analysis" height="400px" span={2}>
+        <IntensityChart chartData={data.sectors} />
+      </ChartCard>
+    </div>
+  )
+}
+
+export function ChartsViewSkeleton() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {Array(4)
+        .fill(0)
+        .map((_, i) => (
+          <ChartCardSkeleton key={i} height="300px" />
+        ))}
+      <ChartCardSkeleton height="400px" />
     </div>
   )
 }

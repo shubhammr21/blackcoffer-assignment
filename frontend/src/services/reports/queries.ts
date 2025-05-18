@@ -34,7 +34,8 @@ export const getFetchDashboardStatsQuery = (
 ) => {
   return queryOptions({
     queryKey: [REPORT_STATS_RECORDS_KEY, params],
-    queryFn: () => fetchDashboardStats(params)
+    queryFn: () => fetchDashboardStats(params),
+    placeholderData: keepPreviousData
   })
 }
 
