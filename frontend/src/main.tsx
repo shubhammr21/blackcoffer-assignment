@@ -9,6 +9,7 @@ import { getQueryClient } from "@/components/providers/query-client"
 import type { QueryClient } from "@tanstack/react-query"
 import NotFound from "./components/not-found"
 import Providers from "./components/providers"
+import FullScreenSpinner from "./components/router-loader"
 import reportWebVitals from "./reportWebVitals"
 import "./styles.css"
 
@@ -26,7 +27,8 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
-  defaultNotFoundComponent: NotFound
+  defaultNotFoundComponent: NotFound,
+  defaultPendingComponent: FullScreenSpinner
 })
 
 // Register the router instance for type safety
