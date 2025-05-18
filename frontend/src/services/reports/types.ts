@@ -77,3 +77,19 @@ export interface YearlyTrendStats {
   likelihood: number
   count: number
 }
+
+export interface DataFacetResponse {
+  end_year: FacetItem<number>[]
+  topic: FacetItem<string>[]
+  sector: FacetItem<string>[]
+  region: FacetItem<string>[]
+  pestle: FacetItem<string>[]
+  source: FacetItem<string>[]
+  country: FacetItem<string>[]
+}
+
+export interface FacetItem<T> {
+  label: T
+  value: T
+  count: number
+}

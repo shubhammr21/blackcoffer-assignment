@@ -2,6 +2,7 @@ import api from "@/lib/api"
 import type {
   DashboardListResponse,
   DashboardStatsResponse,
+  DataFacetResponse,
   FilterOptionsResponse
 } from "./types"
 
@@ -23,5 +24,9 @@ export const fetchFilterOptions = async () => {
   const response = await api.get<FilterOptionsResponse>(
     "/records/filter-options/"
   )
+  return response.data
+}
+export const fetchFacets = async () => {
+  const response = await api.get<DataFacetResponse>("/records/facet/")
   return response.data
 }

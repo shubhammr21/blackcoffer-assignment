@@ -11,9 +11,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { getFetchFilterOptionsQuery } from "@/services/reports/queries"
+import { getFetchFacetsQuery } from "@/services/reports/queries"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { type Filters } from "./dashboard"
+import { Badge } from "./ui/badge"
 
 interface FilterPanelProps {
   filters: Filters
@@ -21,7 +22,7 @@ interface FilterPanelProps {
 }
 
 const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
-  const { data: filterOptions } = useSuspenseQuery(getFetchFilterOptionsQuery())
+  const { data: filterOptions } = useSuspenseQuery(getFetchFacetsQuery())
 
   return (
     <Accordion
@@ -38,17 +39,23 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">End Year</label>
               <Select
-                value={filters.endYear}
-                onValueChange={value => onFilterChange("endYear", value)}
+                value={filters.end_year}
+                onValueChange={value => onFilterChange("end_year", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select end year" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.end_years.map(year => (
-                    <SelectItem key={year} value={String(year)}>
-                      {year}
+                  {filterOptions.end_year.map(facet => (
+                    <SelectItem key={facet.label} value={String(facet.value)}>
+                      <span className="truncate">{facet.label}</span>
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 font-mono text-xs"
+                      >
+                        {facet.count.toLocaleString()}
+                      </Badge>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -67,9 +74,15 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.topics.map(topic => (
-                    <SelectItem key={topic} value={topic}>
-                      {topic}
+                  {filterOptions.topic.map(facet => (
+                    <SelectItem key={facet.label} value={String(facet.value)}>
+                      <span className="truncate">{facet.label}</span>
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 font-mono text-xs"
+                      >
+                        {facet.count.toLocaleString()}
+                      </Badge>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -88,9 +101,15 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.sectors.map(sector => (
-                    <SelectItem key={sector} value={sector}>
-                      {sector}
+                  {filterOptions.sector.map(facet => (
+                    <SelectItem key={facet.label} value={String(facet.value)}>
+                      <span className="truncate">{facet.label}</span>
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 font-mono text-xs"
+                      >
+                        {facet.count.toLocaleString()}
+                      </Badge>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -109,9 +128,15 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.regions.map(region => (
-                    <SelectItem key={region} value={region}>
-                      {region}
+                  {filterOptions.region.map(facet => (
+                    <SelectItem key={facet.label} value={String(facet.value)}>
+                      <span className="truncate">{facet.label}</span>
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 font-mono text-xs"
+                      >
+                        {facet.count.toLocaleString()}
+                      </Badge>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -130,9 +155,15 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.pestles.map(pestle => (
-                    <SelectItem key={pestle} value={pestle}>
-                      {pestle}
+                  {filterOptions.pestle.map(facet => (
+                    <SelectItem key={facet.label} value={String(facet.value)}>
+                      <span className="truncate">{facet.label}</span>
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 font-mono text-xs"
+                      >
+                        {facet.count.toLocaleString()}
+                      </Badge>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -151,9 +182,15 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.sources.map(source => (
-                    <SelectItem key={source} value={source}>
-                      {source}
+                  {filterOptions.source.map(facet => (
+                    <SelectItem key={facet.label} value={String(facet.value)}>
+                      <span className="truncate">{facet.label}</span>
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 font-mono text-xs"
+                      >
+                        {facet.count.toLocaleString()}
+                      </Badge>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -171,10 +208,24 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.countries.map(country => (
-                    <SelectItem key={country} value={country}>
-                      {country}
+                  <SelectItem value="all">
+                    <span>Any country</span>
+                    <Badge variant="outline" className="ml-2">
+                      {filterOptions.country.reduce(
+                        (sum, facet) => sum + facet.count,
+                        0
+                      )}
+                    </Badge>
+                  </SelectItem>
+                  {filterOptions.country.map(facet => (
+                    <SelectItem key={facet.label} value={String(facet.value)}>
+                      <span className="truncate">{facet.label}</span>
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 font-mono text-xs"
+                      >
+                        {facet.count.toLocaleString()}
+                      </Badge>
                     </SelectItem>
                   ))}
                 </SelectContent>
