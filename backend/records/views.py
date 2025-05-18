@@ -1,4 +1,14 @@
-from django.db.models import Avg, Case, Count, FloatField, IntegerField, Q, Value, When
+from django.db.models import (
+    Avg,
+    Case,
+    Count,
+    F,
+    FloatField,
+    IntegerField,
+    Q,
+    Value,
+    When,
+)
 from django.db.models.functions import Cast, Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
@@ -125,3 +135,28 @@ class DataFilterOptionsView(generics.GenericAPIView):
         }
 
         return Response(options)
+
+
+class DataFacetView(generics.GenericAPIView):
+    def get(self, request):
+        def get_facets(field):
+
+            return (
+                DataRecord.objects.exclude(**{f"{field}__isnull": True})
+                .values(field)
+                .annotate(count=Count("id"), label=F(field), value=F(field))
+                .order_by("-count")
+                .values("label", "value", "count")
+            )
+
+        facets = {
+            "end_year": get_facets("end_year"),
+            "topic": get_facets("topic"),
+            "sector": get_facets("sector"),
+            "region": get_facets("region"),
+            "pestle": get_facets("pestle"),
+            "source": get_facets("source"),
+            "country": get_facets("country"),
+        }
+
+        return Response(facets)
