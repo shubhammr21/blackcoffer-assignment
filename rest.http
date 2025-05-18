@@ -1,0 +1,8 @@
+GET http://localhost:8000/api/records/list/?topics=energy HTTP/1.1
+####
+GET http://localhost:8000/api/records/stats/ HTTP/1.1
+####
+GET http://localhost:8000/api/records/filter-options/ HTTP/1.1
+####
+GET http://localhost:8000/api/records/facet/ HTTP/1.1
+
