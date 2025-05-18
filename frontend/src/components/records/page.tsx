@@ -1,7 +1,7 @@
 import { useFilters } from "@/hooks/use-filters"
 import { getFetchDashboardTableQuery } from "@/services/reports/queries"
 import type { SortParams } from "@/services/reports/types"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { type SortingState } from "@tanstack/react-table"
 import { useMemo } from "react"
 import { columns as recordColumns } from "./components/columns"
@@ -27,13 +27,15 @@ export const sortByToState = (sortBy: SortParams["sortBy"] | undefined) => {
 
 export default function DataRecordTablePage() {
   const { filters, setFilters } = useFilters("/table")
-  const { data } = useSuspenseQuery(getFetchDashboardTableQuery(filters))
+  const { data, isLoading } = useQuery(getFetchDashboardTableQuery(filters))
   const paginationState = {
     pageIndex: (filters.page ?? DEFAULT_PAGE_INDEX) - 1,
     pageSize: filters.page_size ?? DEFAULT_PAGE_SIZE
   }
   const sortingState = sortByToState(filters.sortBy)
   const columns = useMemo(() => recordColumns, [])
+
+  if (isLoading) return null
 
   return (
     <>
@@ -48,7 +50,7 @@ export default function DataRecordTablePage() {
           </div>
           <div className="space-y-4">
             <DataTable
-              data={data.results}
+              data={data?.results ?? []}
               columns={columns}
               pagination={paginationState}
               sorting={sortingState}
