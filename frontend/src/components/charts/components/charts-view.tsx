@@ -11,23 +11,23 @@ type ChartsViewProps = { data: DashboardStatsResponse }
 export default function ChartsView({ data }: ChartsViewProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <ChartCard title="Intensity by Region" height="300px">
+      <ChartCard title="Intensity by Region">
         <RegionChart chartData={data.regions} />
       </ChartCard>
 
-      <ChartCard title="Likelihood Distribution" height="300px">
+      <ChartCard title="Likelihood Distribution">
         <LikelihoodChart chartData={data.likelihoods} />
       </ChartCard>
 
-      <ChartCard title="Topics Distribution" height="300px">
+      <ChartCard title="Topics Distribution">
         <TopicChart chartData={data.topics} />
       </ChartCard>
 
-      <ChartCard title="Yearly Trends" height="300px">
+      <ChartCard title="Yearly Trends">
         <YearlyTrendChart yearlyData={data.yearly_trends} />
       </ChartCard>
 
-      <ChartCard title="Intensity Analysis" height="400px" span={2}>
+      <ChartCard className="lg:col-span-2" title="Intensity Analysis">
         <IntensityChart chartData={data.sectors} />
       </ChartCard>
     </div>
@@ -40,9 +40,9 @@ export function ChartsViewSkeleton() {
       {Array(4)
         .fill(0)
         .map((_, i) => (
-          <ChartCardSkeleton key={i} height="300px" />
+          <ChartCardSkeleton key={i} />
         ))}
-      <ChartCardSkeleton height="400px" />
+      <ChartCardSkeleton />
     </div>
   )
 }
