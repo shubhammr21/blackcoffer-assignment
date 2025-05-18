@@ -21,9 +21,118 @@ interface FilterPanelProps {
   onFilterChange: (filter: RecordFilterParams) => void
 }
 
+interface FilterSelectProps {
+  label: string
+  value: string | undefined
+  options: Array<{ label: string; value: string; count: number }>
+  placeholder: string
+  onChange: (value: string) => void
+}
+
+const FilterSelect = ({
+  label,
+  value,
+  options,
+  placeholder,
+  onChange
+}: FilterSelectProps) => {
+  const getFilterValue = (value: string | undefined) => value ?? "all"
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium">{label}</label>
+      <Select value={getFilterValue(value)} onValueChange={onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Any</SelectItem>
+          {options.map(facet => (
+            <SelectItem key={facet.label} value={facet.value}>
+              <span className="truncate">{facet.label}</span>
+              <Badge variant="secondary" className="ml-2 font-mono text-xs">
+                {facet.count.toLocaleString()}
+              </Badge>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  )
+}
+
 const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
   const { data: filterOptions } = useSuspenseQuery(getFetchFacetsQuery())
-  const getFilterValue = (value: string | undefined) => value ?? "all"
+
+  const handleFilterChange =
+    (key: keyof RecordFilterParams) => (value: string) => {
+      onFilterChange({
+        ...filters,
+        [key]:
+          value === "all"
+            ? undefined
+            : key === "end_year"
+              ? parseInt(value)
+              : value
+      })
+    }
+
+  const filterConfigs: Array<{
+    key: keyof RecordFilterParams
+    label: string
+    placeholder: string
+    options: Array<{ label: string; value: string; count: number }>
+  }> = [
+    {
+      key: "end_year",
+      label: "End Year",
+      placeholder: "Select end year",
+      options: filterOptions.end_year.map(f => ({
+        ...f,
+        value: f.value.toString(),
+        label: String(f.label)
+      }))
+    },
+    {
+      key: "topic",
+      label: "Topic",
+      placeholder: "Select topic",
+      options: filterOptions.topic.map(f => ({ ...f, value: String(f.value) }))
+    },
+    {
+      key: "sector",
+      label: "Sector",
+      placeholder: "Select sector",
+      options: filterOptions.sector.map(f => ({ ...f, value: String(f.value) }))
+    },
+    {
+      key: "region",
+      label: "Region",
+      placeholder: "Select region",
+      options: filterOptions.region.map(f => ({ ...f, value: String(f.value) }))
+    },
+    {
+      key: "pestle",
+      label: "PESTLE",
+      placeholder: "Select PESTLE",
+      options: filterOptions.pestle.map(f => ({ ...f, value: String(f.value) }))
+    },
+    {
+      key: "source",
+      label: "Source",
+      placeholder: "Select source",
+      options: filterOptions.source.map(f => ({ ...f, value: String(f.value) }))
+    },
+    {
+      key: "country",
+      label: "Country",
+      placeholder: "Select country",
+      options: filterOptions.country.map(f => ({
+        ...f,
+        value: String(f.value)
+      }))
+    }
+  ]
 
   return (
     <Accordion
@@ -36,234 +145,18 @@ const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
         <AccordionTrigger>Filter Data</AccordionTrigger>
         <AccordionContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {/* End Year Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">End Year</label>
-              <Select
-                value={getFilterValue(filters.end_year?.toString())}
-                onValueChange={value =>
-                  onFilterChange({
-                    ...filters,
-                    end_year: value === "all" ? undefined : parseInt(value)
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select end year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.end_year.map(facet => (
-                    <SelectItem
-                      key={facet.label}
-                      value={facet.value.toString()}
-                    >
-                      <span className="truncate">{facet.label}</span>
-                      <Badge
-                        variant="secondary"
-                        className="ml-2 font-mono text-xs"
-                      >
-                        {facet.count.toLocaleString()}
-                      </Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Topic Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Topic</label>
-              <Select
-                value={getFilterValue(filters.topic)}
-                onValueChange={value =>
-                  onFilterChange({
-                    ...filters,
-                    topic: value === "all" ? undefined : value
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select topic" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.topic.map(facet => (
-                    <SelectItem key={facet.label} value={String(facet.value)}>
-                      <span className="truncate">{facet.label}</span>
-                      <Badge
-                        variant="secondary"
-                        className="ml-2 font-mono text-xs"
-                      >
-                        {facet.count.toLocaleString()}
-                      </Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Sector Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Sector</label>
-              <Select
-                value={getFilterValue(filters.sector)}
-                onValueChange={value =>
-                  onFilterChange({
-                    ...filters,
-                    sector: value === "all" ? undefined : value
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select sector" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.sector.map(facet => (
-                    <SelectItem key={facet.label} value={String(facet.value)}>
-                      <span className="truncate">{facet.label}</span>
-                      <Badge
-                        variant="secondary"
-                        className="ml-2 font-mono text-xs"
-                      >
-                        {facet.count.toLocaleString()}
-                      </Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Region Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Region</label>
-              <Select
-                value={getFilterValue(filters.region)}
-                onValueChange={value =>
-                  onFilterChange({
-                    ...filters,
-                    region: value === "all" ? undefined : value
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select region" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.region.map(facet => (
-                    <SelectItem key={facet.label} value={String(facet.value)}>
-                      <span className="truncate">{facet.label}</span>
-                      <Badge
-                        variant="secondary"
-                        className="ml-2 font-mono text-xs"
-                      >
-                        {facet.count.toLocaleString()}
-                      </Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* PESTLE Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">PESTLE</label>
-              <Select
-                value={getFilterValue(filters.pestle)}
-                onValueChange={value =>
-                  onFilterChange({
-                    ...filters,
-                    pestle: value === "all" ? undefined : value
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select PESTLE" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.pestle.map(facet => (
-                    <SelectItem key={facet.label} value={String(facet.value)}>
-                      <span className="truncate">{facet.label}</span>
-                      <Badge
-                        variant="secondary"
-                        className="ml-2 font-mono text-xs"
-                      >
-                        {facet.count.toLocaleString()}
-                      </Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Source Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Source</label>
-              <Select
-                value={getFilterValue(filters.source)}
-                onValueChange={value =>
-                  onFilterChange({
-                    ...filters,
-                    source: value === "all" ? undefined : value
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select source" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any</SelectItem>
-                  {filterOptions.source.map(facet => (
-                    <SelectItem key={facet.label} value={String(facet.value)}>
-                      <span className="truncate">{facet.label}</span>
-                      <Badge
-                        variant="secondary"
-                        className="ml-2 font-mono text-xs"
-                      >
-                        {facet.count.toLocaleString()}
-                      </Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Country Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Country</label>
-              <Select
-                value={getFilterValue(filters.country)}
-                onValueChange={value =>
-                  onFilterChange({
-                    ...filters,
-                    country: value === "all" ? undefined : value
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    <span>Any</span>
-                  </SelectItem>
-                  {filterOptions.country.map(facet => (
-                    <SelectItem key={facet.label} value={String(facet.value)}>
-                      <span className="truncate">{facet.label}</span>
-                      <Badge
-                        variant="secondary"
-                        className="ml-2 font-mono text-xs"
-                      >
-                        {facet.count.toLocaleString()}
-                      </Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {filterConfigs.map(config => (
+              <FilterSelect
+                key={config.key}
+                label={config.label}
+                value={filters[
+                  config.key as keyof RecordFilterParams
+                ]?.toString()}
+                options={config.options}
+                placeholder={config.placeholder}
+                onChange={handleFilterChange(config.key)}
+              />
+            ))}
           </div>
         </AccordionContent>
       </AccordionItem>

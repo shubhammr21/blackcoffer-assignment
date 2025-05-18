@@ -1,10 +1,9 @@
 "use client"
 
 import { X } from "lucide-react"
-import * as React from "react"
 
+import { DebouncedInput } from "@/components/debounced-input"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { useFilters } from "@/hooks/use-filters"
 import { getFetchFacetsQuery } from "@/services/reports/queries"
 import { type DataFacetResponse } from "@/services/reports/types"
@@ -39,9 +38,9 @@ export function DataTableToolbar({
       key !== searchKey && filters[key as keyof typeof filters] !== undefined
   )
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (value: string | number) => {
     setFilters({
-      [searchKey]: event.target.value
+      [searchKey]: value
     })
   }
 
@@ -56,7 +55,7 @@ export function DataTableToolbar({
 
   return (
     <div className="flex flex-1 items-center space-x-2">
-      <Input
+      <DebouncedInput
         placeholder="Filter data..."
         value={currentSearchValue}
         onChange={handleSearchChange}
