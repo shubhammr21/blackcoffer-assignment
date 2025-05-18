@@ -3,17 +3,21 @@ import type {
   DashboardListResponse,
   DashboardStatsResponse,
   DataFacetResponse,
-  FilterOptionsResponse
+  FilterOptionsResponse,
+  PaginatedRecordFilterParams,
+  RecordFilterParams
 } from "./types"
 
-export const fetchDashboardTable = async (params = {}) => {
+export const fetchDashboardTable = async (
+  params: PaginatedRecordFilterParams = {}
+) => {
   const response = await api.get<DashboardListResponse>("/records/list/", {
     params
   })
   return response.data
 }
 
-export const fetchDashboardStats = async (params = {}) => {
+export const fetchDashboardStats = async (params: RecordFilterParams = {}) => {
   const response = await api.get<DashboardStatsResponse>("/records/stats/", {
     params
   })

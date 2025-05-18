@@ -5,9 +5,10 @@ import {
   fetchFacets,
   fetchFilterOptions
 } from "./services"
+import type { PaginatedRecordFilterParams, RecordFilterParams } from "./types"
 
 const REPORT_FILTER_OPTIONS_KEY = "report-filter-options"
-const REPORT_DATA_RECORDS_KEY = "report-data_records"
+const REPORT_DATA_RECORDS_KEY = "report-data-records"
 const REPORT_STATS_RECORDS_KEY = "report-stats"
 const REPORT_FACET_KEY = "report-facet"
 
@@ -19,18 +20,22 @@ export const getFetchFilterOptionsQuery = () => {
   })
 }
 
-export const getFetchDashboardTableQuery = () => {
+export const getFetchDashboardTableQuery = (
+  params: PaginatedRecordFilterParams = {}
+) => {
   return queryOptions({
-    queryKey: [REPORT_DATA_RECORDS_KEY],
-    queryFn: fetchDashboardTable,
+    queryKey: [REPORT_DATA_RECORDS_KEY, params],
+    queryFn: () => fetchDashboardTable(params),
     staleTime: 1000 * 60 * 5
   })
 }
 
-export const getFetchDashboardStatsQuery = () => {
+export const getFetchDashboardStatsQuery = (
+  params: RecordFilterParams = {}
+) => {
   return queryOptions({
-    queryKey: [REPORT_STATS_RECORDS_KEY],
-    queryFn: fetchDashboardStats,
+    queryKey: [REPORT_STATS_RECORDS_KEY, params],
+    queryFn: () => fetchDashboardStats(params),
     staleTime: 1000 * 60 * 5
   })
 }

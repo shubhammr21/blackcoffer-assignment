@@ -1,3 +1,46 @@
+export type PaginatedData<T> = {
+  count: number
+  next: string
+  previous: null
+  results: T[]
+}
+
+export type PaginationParams = { page: number; page_size: number }
+export type SortParams = { sortBy: `${string}.${"asc" | "desc"}` }
+export type Filters<T> = Partial<T & PaginationParams & SortParams>
+
+export interface RecordFilterParams {
+  end_year?: number
+  start_year?: number
+  title?: string
+  sector?: string
+  country?: string
+  region?: string
+  topic?: string
+  pestle?: string
+  source?: string
+  intensity_min?: string
+  intensity_max?: string
+  relevance_min?: string
+  relevance_max?: string
+  likelihood_min?: string
+  likelihood_max?: string
+  end_years?: string
+  start_years?: string
+  topics?: string
+  sectors?: string
+  regions?: string
+  pestles?: string
+  sources?: string
+  countries?: string
+  added_after?: string
+  added_before?: string
+  published_after?: string
+  published_before?: string
+}
+
+export type PaginatedRecordFilterParams = Filters<RecordFilterParams>
+
 export interface FilterOptionsResponse {
   end_years: number[]
   topics: string[]
@@ -8,12 +51,7 @@ export interface FilterOptionsResponse {
   countries: string[]
 }
 
-export interface DashboardListResponse {
-  count: number
-  next: string
-  previous: null
-  results: DataRecord[]
-}
+export type DashboardListResponse = PaginatedData<DataRecord>
 
 export interface DataRecord {
   id: number
@@ -37,9 +75,9 @@ export interface DataRecord {
 }
 
 export interface DashboardStatsResponse {
-  avg_intensity: number
-  avg_likelihood: number
-  avg_relevance: number
+  avg_intensity: number | null
+  avg_likelihood: number | null
+  avg_relevance: number | null
   total_records: number
   sectors: SectorStats[]
   topics: TopicStats[]
