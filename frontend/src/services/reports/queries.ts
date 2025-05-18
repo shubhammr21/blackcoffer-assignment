@@ -15,8 +15,7 @@ const REPORT_FACET_KEY = "report-facet"
 export const getFetchFilterOptionsQuery = () => {
   return queryOptions({
     queryKey: [REPORT_FILTER_OPTIONS_KEY],
-    queryFn: fetchFilterOptions,
-    staleTime: 1000 * 60 * 5
+    queryFn: fetchFilterOptions
   })
 }
 
@@ -26,8 +25,7 @@ export const getFetchDashboardTableQuery = (
   return queryOptions({
     queryKey: [REPORT_DATA_RECORDS_KEY, params],
     queryFn: () => fetchDashboardTable(params),
-    placeholderData: keepPreviousData,
-    staleTime: 1000 * 60 * 5
+    placeholderData: keepPreviousData
   })
 }
 
@@ -36,15 +34,13 @@ export const getFetchDashboardStatsQuery = (
 ) => {
   return queryOptions({
     queryKey: [REPORT_STATS_RECORDS_KEY, params],
-    queryFn: () => fetchDashboardStats(params),
-    staleTime: 1000 * 60 * 5
+    queryFn: () => fetchDashboardStats(params)
   })
 }
 
 export const getFetchFacetsQuery = () => {
   return queryOptions({
     queryKey: [REPORT_FACET_KEY],
-    queryFn: fetchFacets,
-    staleTime: 1000 * 60 * 5
+    queryFn: fetchFacets
   })
 }
